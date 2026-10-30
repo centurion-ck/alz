@@ -1,0 +1,442 @@
+/*
+--- Built-in Replacements ---
+This file contains built-in replacements to avoid repeating the same hard-coded values.
+Replacements are denoted by the dollar-dollar curly braces token (e.g. $${starter_location_01}). The following details each built-in replacements that you can use:
+`starter_location_01`: This is the primary Azure location sourced from the `starter_locations` variable. This can be used to set the location of resources.
+`starter_location_02` to `starter_location_##`: These are the secondary Azure locations sourced from the `starter_locations` variable. This can be used to set the location of resources.
+`starter_location_01_short`: Short code for the primary Azure location. Defaults to the region geo_code, or short_name if no geo_code is available. Can be overridden via the starter_locations_short variable.
+`starter_location_02_short` to `starter_location_##_short`: Short codes for the secondary Azure locations. Same behavior and override rules as starter_location_01_short.
+`root_parent_management_group_id`: This is the id of the management group that the ALZ hierarchy will be nested under.
+`subscription_id_identity`: The subscription ID of the subscription to deploy the identity resources to, sourced from the variable `subscription_ids`.
+`subscription_id_connectivity`: The subscription ID of the subscription to deploy the connectivity resources to, sourced from the variable `subscription_ids`.
+`subscription_id_management`: The subscription ID of the subscription to deploy the management resources to, sourced from the variable `subscription_ids`.
+`subscription_id_security`: The subscription ID of the subscription to deploy the security resources to, sourced from the variable `subscription_ids`.
+*/
+
+/*
+--- Starter Locations ---
+You can define the Azure regions to use throughout the configuration.
+The first location will be used as the primary location, the second as the secondary location, and so on.
+*/
+starter_locations = ["uaenorth"]
+
+/*
+--- Custom Replacements ---
+You can define custom replacements to use throughout the configuration.
+*/
+custom_replacements = {
+  /*
+  --- Custom Name Replacements ---
+  You can define custom names and other strings to use throughout the configuration.
+  You can only use the built in replacements in this section.
+  NOTE: You cannot refer to another custom name in this variable.
+  */
+  names = {
+    # Defender email security contact
+    defender_email_security_contact = "replace_me@replace_me.com"
+
+    # Resource provisioning primary connectivity
+    ddos_protection_plan_enabled                       = false
+    primary_firewall_enabled                           = true
+    primary_firewall_sku_tier                          = "Premium"
+    primary_firewall_management_ip_enabled             = true
+    primary_virtual_network_gateway_vpn_enabled        = true
+    primary_private_dns_zones_enabled                  = true
+    primary_private_dns_auto_registration_zone_enabled = false
+    primary_private_dns_resolver_enabled               = true
+
+    # Resource group names (platform scope only)
+    management_resource_group_name               = "rg-log-mgmt-prd-bidaya-aen-01"
+    connectivity_hub_primary_resource_group_name = "rg-net-hub-conn-prd-bidaya-aen-01"
+    agw_resource_group_name                      = "rg-agw-hub-conn-prd-bidaya-aen-01"
+    dns_resource_group_name                      = "rg-dns-hub-conn-prd-bidaya-aen-01"
+    ampls_resource_group_name                    = "rg-ampls-hub-conn-prd-bidaya-aen-01"
+    monitoring_resource_group_name               = "rg-mon-mgmt-prd-bidaya-aen-01"
+    asc_export_resource_group_name               = "rg-mon-mgmt-prd-bidaya-aen-01"
+    service_health_alerts_resource_group_name    = "rg-mon-mgmt-prd-bidaya-aen-01"
+
+    # Resource names - management
+    log_analytics_workspace_name            = "log-mgmt-prd-bidaya-aen-01"
+    ama_user_assigned_managed_identity_name = "id-ama-prd-bidaya-aen-01"
+    dcr_change_tracking_name                = "dcr-change-mgmt-prd-bidaya-aen-01"
+    dcr_defender_sql_name                   = "dcr-sql-mgmt-prd-bidaya-aen-01"
+    dcr_vm_insights_name                    = "dcr-vm-mgmt-prd-bidaya-aen-01"
+
+    # Resource names - connectivity
+    primary_virtual_network_name                         = "vnet-hub-conn-prd-bidaya-aen-01"
+    primary_firewall_name                                = "afw-hub-conn-prd-bidaya-aen-01"
+    primary_firewall_policy_name                         = "afwp-hub-conn-prd-bidaya-aen-01"
+    primary_firewall_public_ip_name                      = "pip-afw-hub-conn-prd-bidaya-aen-01"
+    primary_firewall_management_public_ip_name           = "pip-afw-mgmt-hub-conn-prd-bidaya-aen-01"
+    primary_route_table_firewall_name                    = "rt-afw-hub-conn-prd-bidaya-aen-01"
+    primary_route_table_user_subnets_name                = "rt-std-hub-conn-prd-bidaya-aen-01"
+    primary_virtual_network_gateway_vpn_name             = "vgw-vpn-hub-conn-prd-bidaya-aen-01"
+    primary_virtual_network_gateway_vpn_public_ip_name_1 = "pip-vgw-vpn-hub-conn-prd-bidaya-aen-01"
+    primary_private_dns_resolver_name                    = "dnspr-hub-conn-prd-bidaya-aen-01"
+
+    # IP ranges - Bidaya overall allocation and UAE North hub
+    # /20 is the overall Bidaya allocation used for routing; the hub VNet itself is /23.
+    primary_hub_address_space                         = "172.20.64.0/20"
+    primary_hub_virtual_network_address_space         = "172.20.64.0/23"
+    primary_firewall_subnet_address_prefix            = "172.20.64.0/26"
+    primary_firewall_management_subnet_address_prefix = "172.20.64.64/26"
+    primary_gateway_subnet_address_prefix             = "172.20.64.128/27"
+  }
+
+  /*
+  --- Custom Resource Group Identifier Replacements ---
+  You can define custom resource group identifiers to use throughout the configuration.
+  You can only use the templated variables and custom names in this section.
+  NOTE: You cannot refer to another custom resource group identifier in this variable.
+  */
+  resource_group_identifiers = {
+    management_resource_group_id           = "/subscriptions/$${subscription_id_management}/resourcegroups/$${management_resource_group_name}"
+    primary_connectivity_resource_group_id = "/subscriptions/$${subscription_id_connectivity}/resourceGroups/$${connectivity_hub_primary_resource_group_name}"
+    dns_resource_group_id                  = "/subscriptions/$${subscription_id_connectivity}/resourceGroups/$${dns_resource_group_name}"
+  }
+
+  /*
+  --- Custom Resource Identifier Replacements ---
+  You can define custom resource identifiers to use throughout the configuration.
+  You can only use the templated variables, custom names and customer resource group identifiers in this variable.
+  NOTE: You cannot refer to another custom resource identifier in this variable.
+  */
+  resource_identifiers = {
+    ama_change_tracking_data_collection_rule_id = "$${management_resource_group_id}/providers/Microsoft.Insights/dataCollectionRules/$${dcr_change_tracking_name}"
+    ama_mdfc_sql_data_collection_rule_id        = "$${management_resource_group_id}/providers/Microsoft.Insights/dataCollectionRules/$${dcr_defender_sql_name}"
+    ama_vm_insights_data_collection_rule_id     = "$${management_resource_group_id}/providers/Microsoft.Insights/dataCollectionRules/$${dcr_vm_insights_name}"
+    ama_user_assigned_managed_identity_id       = "$${management_resource_group_id}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$${ama_user_assigned_managed_identity_name}"
+    log_analytics_workspace_id                  = "$${management_resource_group_id}/providers/Microsoft.OperationalInsights/workspaces/$${log_analytics_workspace_name}"
+  }
+}
+
+/*
+--- Tags ---
+This variable can be used to apply tags to all resources that support it. Some resources allow overriding these tags.
+*/
+tags = {
+  deployed_by = "terraform"
+  source      = "Azure Landing Zones Accelerator"
+}
+
+/*
+--- Management Resources ---
+You can use this section to customize the management resources that will be deployed.
+*/
+management_resources_enabled = true
+
+management_resource_settings = {
+  location                                  = "$${starter_location_01}"
+  log_analytics_workspace_name              = "$${log_analytics_workspace_name}"
+  log_analytics_workspace_retention_in_days = 90
+  resource_group_name                       = "$${management_resource_group_name}"
+  user_assigned_managed_identities = {
+    ama = {
+      name = "$${ama_user_assigned_managed_identity_name}"
+    }
+  }
+  data_collection_rules = {
+    change_tracking = {
+      name = "$${dcr_change_tracking_name}"
+    }
+    defender_sql = {
+      name = "$${dcr_defender_sql_name}"
+    }
+    vm_insights = {
+      name = "$${dcr_vm_insights_name}"
+    }
+  }
+}
+
+/*
+--- Management Groups and Policy ---
+You can use this section to customize the management groups and policies that will be deployed.
+You can further configure management groups and policy by supplying a `lib` folder. This is detailed in the Accelerator documentation.
+*/
+management_groups_enabled = true
+
+management_group_settings = {
+  # This is the name of the architecture that will be used to deploy the management resources.
+  # It refers to the alz_custom.alz_architecture_definition.yaml file in the lib folder.
+  # Do not change this value unless you have created another architecture definition
+  # with the name value specified below.
+  architecture_name  = "alz_custom"
+  location           = "$${starter_location_01}"
+  parent_resource_id = "$${root_parent_management_group_id}"
+  policy_default_values = {
+    ama_change_tracking_data_collection_rule_id = "$${ama_change_tracking_data_collection_rule_id}"
+    ama_mdfc_sql_data_collection_rule_id        = "$${ama_mdfc_sql_data_collection_rule_id}"
+    ama_vm_insights_data_collection_rule_id     = "$${ama_vm_insights_data_collection_rule_id}"
+    ama_user_assigned_managed_identity_id       = "$${ama_user_assigned_managed_identity_id}"
+    ama_user_assigned_managed_identity_name     = "$${ama_user_assigned_managed_identity_name}"
+    log_analytics_workspace_id                  = "$${log_analytics_workspace_id}"
+    private_dns_zone_subscription_id            = "$${subscription_id_connectivity}"
+    private_dns_zone_region                     = "$${starter_location_01}"
+    private_dns_zone_resource_group_name        = "$${dns_resource_group_name}"
+    resource_group_location                     = "$${starter_location_01}"
+    resource_group_name_mdfc                    = "$${asc_export_resource_group_name}"
+    resource_group_name_service_health_alerts   = "$${service_health_alerts_resource_group_name}"
+    email_security_contact                      = "$${defender_email_security_contact}"
+    /*
+    # Example of allowed locations for Sovereign Landing Zones policies
+    allowed_locations = [
+      "$${starter_location_01}"
+    ]
+    */
+  }
+  subscription_placement = {
+    connectivity = {
+      subscription_id       = "$${subscription_id_connectivity}"
+      management_group_name = "BidayaConnectivity"
+    }
+    management = {
+      subscription_id       = "$${subscription_id_management}"
+      management_group_name = "BidayaManagement"
+    }
+    prod = {
+      subscription_id       = "$${subscription_id_production}"
+      management_group_name = "BidayaProd"
+    }
+    nonprod = {
+      subscription_id       = "$${subscription_id_nonprod}"
+      management_group_name = "BidayaNonProd"
+    }
+  }
+  policy_assignments_to_modify = {
+    BidayaConnectivity = {
+      policy_assignments = {
+        Enable-DDoS-VNET = {
+          enforcement_mode = "DoNotEnforce"
+        }
+      }
+    }
+    BidayaLandingZone = {
+      policy_assignments = {
+        Enable-DDoS-VNET = {
+          enforcement_mode = "DoNotEnforce"
+        }
+      }
+    }
+    Bidaya = {
+      policy_assignments = {
+        Deploy-MDFC-Config-H224 = {
+          parameters = {
+            # Enable only the Defender plans requested by Bidaya.
+            enableAscForServers                         = "DeployIfNotExists"
+            enableAscForServersVulnerabilityAssessments = "DeployIfNotExists"
+            enableAscForContainers                      = "DeployIfNotExists"
+            enableAscForAppServices                     = "DeployIfNotExists"
+            enableAscForSql                             = "DeployIfNotExists"
+            enableAscForOssDb                           = "DeployIfNotExists"
+            enableAscForStorage                         = "DeployIfNotExists"
+            enableAscForKeyVault                        = "DeployIfNotExists"
+            enableAscForCspm                            = "DeployIfNotExists"
+            # Explicitly disable plans outside the agreed scope.
+            enableAscForSqlOnVm   = "Disabled"
+            enableAscForArm       = "Disabled"
+            enableAscForCosmosDbs = "Disabled"
+          }
+        }
+      }
+    }
+  }
+  /*
+  # Example of how to add management group role assignments
+  management_group_role_assignments = {
+    root_owner_role_assignment = {
+      management_group_name      = "root"
+      role_definition_id_or_name = "Owner"
+      principal_id               = "00000000-0000-0000-0000-000000000000"
+    }
+  }
+  */
+  # role_assignment_name_use_random_uuid = false  # Uncomment this for backwards compatibility with previous naming convention
+}
+
+/*
+--- Connectivity - Hub and Spoke Virtual Network ---
+You can use this section to customize the hub virtual networking that will be deployed.
+*/
+connectivity_type = "hub_and_spoke_vnet"
+
+connectivity_resource_groups = {
+  vnet_primary = {
+    name     = "$${connectivity_hub_primary_resource_group_name}"
+    location = "$${starter_location_01}"
+    settings = { enabled = true }
+  }
+  agw = {
+    name     = "$${agw_resource_group_name}"
+    location = "$${starter_location_01}"
+    settings = { enabled = true }
+  }
+  ampls = {
+    name     = "$${ampls_resource_group_name}"
+    location = "$${starter_location_01}"
+    settings = { enabled = true }
+  }
+  dns = {
+    name     = "$${dns_resource_group_name}"
+    location = "$${starter_location_01}"
+    settings = { enabled = "$${primary_private_dns_zones_enabled}" }
+  }
+}
+
+hub_and_spoke_networks_settings = {
+  enabled_resources = {
+    ddos_protection_plan = "$${ddos_protection_plan_enabled}"
+  }
+}
+
+hub_virtual_networks = {
+  primary = {
+    location          = "$${starter_location_01}"
+    default_parent_id = "$${primary_connectivity_resource_group_id}"
+    enabled_resources = {
+      bastion                               = false
+      virtual_network_gateway_express_route = false
+      firewall                              = "$${primary_firewall_enabled}"
+      virtual_network_gateway_vpn           = "$${primary_virtual_network_gateway_vpn_enabled}"
+      private_dns_zones                     = "$${primary_private_dns_zones_enabled}"
+      private_dns_resolver                  = "$${primary_private_dns_resolver_enabled}"
+    }
+    hub_virtual_network = {
+      name                          = "$${primary_virtual_network_name}"
+      address_space                 = ["$${primary_hub_virtual_network_address_space}"]
+      routing_address_space         = ["$${primary_hub_address_space}"]
+      route_table_name_firewall     = "$${primary_route_table_firewall_name}"
+      route_table_name_user_subnets = "$${primary_route_table_user_subnets_name}"
+      subnets = {
+        dns_inbound = {
+          name             = "snet-dnsin-hub-conn-prd-bidaya-aen-01"
+          address_prefixes = ["172.20.64.160/28"]
+          delegations = [{
+            name = "dns-resolver-inbound"
+            service_delegation = {
+              name    = "Microsoft.Network/dnsResolvers"
+              actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+            }
+          }]
+        }
+        dns_outbound = {
+          name             = "snet-dnsout-hub-conn-prd-bidaya-aen-01"
+          address_prefixes = ["172.20.64.176/28"]
+          delegations = [{
+            name = "dns-resolver-outbound"
+            service_delegation = {
+              name    = "Microsoft.Network/dnsResolvers"
+              actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+            }
+          }]
+        }
+        application_gateway = {
+          name             = "snet-agw-hub-conn-prd-bidaya-aen-01"
+          address_prefixes = ["172.20.64.192/26"]
+          # Application Gateway v2 does not support a 0.0.0.0/0 route to the firewall.
+          # Do NOT attach the generated user-subnet route table. Add specific spoke routes later.
+          route_table = {
+            assign_generated_route_table = false
+          }
+        }
+        private_endpoints = {
+          name                                      = "snet-pe-hub-conn-prd-bidaya-aen-01"
+          address_prefixes                          = ["172.20.65.0/27"]
+          private_endpoint_network_policies_enabled = false
+        }
+      }
+    }
+    firewall = {
+      subnet_address_prefix            = "$${primary_firewall_subnet_address_prefix}"
+      management_subnet_address_prefix = "$${primary_firewall_management_subnet_address_prefix}"
+      name                             = "$${primary_firewall_name}"
+      sku_tier                         = "$${primary_firewall_sku_tier}"
+      default_ip_configuration = {
+        public_ip_config = {
+          name = "$${primary_firewall_public_ip_name}"
+        }
+      }
+      management_ip_enabled = "$${primary_firewall_management_ip_enabled}"
+      management_ip_configuration = {
+        public_ip_config = {
+          name = "$${primary_firewall_management_public_ip_name}"
+        }
+      }
+    }
+    firewall_policy = {
+      name = "$${primary_firewall_policy_name}"
+      sku  = "$${primary_firewall_sku_tier}"
+    }
+    virtual_network_gateways = {
+      subnet_address_prefix = "$${primary_gateway_subnet_address_prefix}"
+      vpn = {
+        sku                       = "VpnGw2AZ"
+        vpn_active_active_enabled = false
+        name                      = "$${primary_virtual_network_gateway_vpn_name}"
+        # Active-passive (active-standby) configuration: one gateway IP configuration.
+        ip_configurations = {
+          active_passive_1 = {
+            public_ip = {
+              name  = "$${primary_virtual_network_gateway_vpn_public_ip_name_1}"
+              zones = [1, 2, 3]
+            }
+          }
+        }
+        # Bidaya site-to-site VPN configuration template.
+        # Do not uncomment until Bidaya confirms the on-premises VPN details.
+        # Replace every <...> value with customer-provided information.
+        #
+        # local_network_gateways = {
+        #   bidaya_onprem = {
+        #     name                = "lng-onprem-hub-conn-prd-bidaya-aen-01"
+        #     resource_group_name = "$${connectivity_hub_primary_resource_group_name}"
+        #     gateway_address     = "<ON_PREMISES_VPN_PUBLIC_IP>"
+        #     address_space       = [
+        #       "<ON_PREMISES_ADDRESS_PREFIX_1>",
+        #       # "<ON_PREMISES_ADDRESS_PREFIX_2>",
+        #     ]
+        #     connection = {
+        #       name                = "con-onprem-hub-conn-prd-bidaya-aen-01"
+        #       resource_group_name = "$${connectivity_hub_primary_resource_group_name}"
+        #       type                = "IPsec"
+        #       connection_protocol = "IKEv2"
+        #       enable_bgp          = false
+        #       shared_key          = "<CUSTOMER_PROVIDED_PRE_SHARED_KEY>"
+        #     }
+        #   }
+        # }
+      }
+    }
+    private_dns_zones = {
+      parent_id = "$${dns_resource_group_id}"
+      private_link_private_dns_zones_regex_filter = {
+        enabled = false
+      }
+      auto_registration_zone_enabled = false
+    }
+    private_dns_resolver = {
+      name = "$${primary_private_dns_resolver_name}"
+      inbound_endpoints = {
+        primary = {
+          name                         = "in-dnspr-hub-conn-prd-bidaya-aen-01"
+          subnet_name                  = "snet-dnsin-hub-conn-prd-bidaya-aen-01"
+          private_ip_allocation_method = "Static"
+          private_ip_address           = "172.20.64.164"
+        }
+      }
+      outbound_endpoints = {
+        primary = {
+          name        = "out-dnspr-hub-conn-prd-bidaya-aen-01"
+          subnet_name = "snet-dnsout-hub-conn-prd-bidaya-aen-01"
+        }
+      }
+    }
+  }
+}
+
+# private_link_private_dns_zone_virtual_network_link_moved_blocks_enabled = true
+
+enable_telemetry = true
+telemetry_additional_content = {
+  deployed_by    = "alz-terraform-accelerator"
+  correlation_id = "00000000-0000-0000-0000-000000000000"
+}

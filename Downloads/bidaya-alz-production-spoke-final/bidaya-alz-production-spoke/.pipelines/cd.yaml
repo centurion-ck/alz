@@ -1,0 +1,26 @@
+---
+trigger:
+  branches:
+    include:
+      - main
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: Solutionplus2/alz-prd-templates
+
+parameters:
+  - name: terraform_cli_version
+    displayName: Terraform CLI Version
+    type: string
+    default: '1.14.9'
+
+lockBehavior: sequential
+
+extends:
+  template: .pipelines/cd-template.yaml@templates
+  parameters:
+    terraform_action: 'apply'
+    root_module_folder_relative_path: .
+    terraform_cli_version: ${{ coalesce(parameters.terraform_cli_version, 'latest') }}

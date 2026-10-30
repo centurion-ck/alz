@@ -1,0 +1,5 @@
+# Supply via pipeline variable group (TF_VAR_production_spoke_address_space) or a local tfvars file.
+# Use only the SolutionPlus/customer-approved /24. Do not use an example CIDR in production.
+production_spoke_address_space      = "<SOLUTIONPLUS-APPROVED-PRODUCTION-SPOKE-CIDR>/24"
+production_spoke_use_remote_gateway = false
+# hub_firewall_private_ip           = "172.20.64.4"  # only if the real firewall IP differs

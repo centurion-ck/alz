@@ -1,0 +1,69 @@
+name: alz_custom
+management_groups:
+  # Existing customer hierarchy. The root management group is not created by this deployment.
+  - id: Bidaya
+    display_name: Bidaya
+    parent_id: null
+    exists: true
+    archetypes:
+      - root_custom
+
+  # Platform and Landing Zone are sibling management groups under Bidaya.
+  - id: BidayaPlatform
+    display_name: Bidaya-Platform
+    parent_id: Bidaya
+    exists: true
+    archetypes:
+      - platform_custom
+
+  - id: BidayaLandingZone
+    display_name: Bidaya-LandingZone
+    parent_id: Bidaya
+    exists: true
+    archetypes:
+      - landing_zones_custom
+
+  # Connectivity and Management are children of Bidaya-Platform.
+  - id: BidayaConnectivity
+    display_name: Bidaya-Connectivity
+    parent_id: BidayaPlatform
+    exists: true
+    archetypes:
+      - connectivity_custom
+
+  - id: BidayaManagement
+    display_name: Bidaya-Management
+    parent_id: BidayaPlatform
+    exists: true
+    archetypes:
+      - management_custom
+
+  # Production and Non-Production are children of Bidaya-LandingZone.
+  - id: BidayaProd
+    display_name: Bidaya-Prod
+    parent_id: BidayaLandingZone
+    exists: true
+    archetypes:
+      - corp_custom
+
+  - id: BidayaNonProd
+    display_name: Bidaya-NonProd
+    parent_id: BidayaLandingZone
+    exists: true
+    archetypes:
+      - corp_custom
+
+  # Sandbox and Decommissioned remain as sibling branches under Bidaya.
+  - id: BidayaSandbox
+    display_name: Bidaya-Sandbox
+    parent_id: Bidaya
+    exists: true
+    archetypes:
+      - sandbox_custom
+
+  - id: BidayaDecommissioned
+    display_name: Bidaya-Decommissioned
+    parent_id: Bidaya
+    exists: true
+    archetypes:
+      - decommissioned_custom
